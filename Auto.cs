@@ -1,42 +1,86 @@
 ﻿class Auto
 {
-    private Random random = new();
-
+    private int Id;
     private string? Number;
-    private float Fuel;
+    private float Fuel = 0;
+    private float MaxFuel;
     private float Rashod;
-    private int Probeg;
+    private int Probeg = 0;
     private bool isMoving = false;
     private bool isAvaria = false;
+    private string Marka;
+    public int[] Coordinates;
 
-    public void Info(string nom, float bak, float ras)
+    public Auto()
     {
-        Number = nom;
-        Fuel = bak;
-        Rashod = ras;
-        Probeg = 0;
+        Id = 0;
+        Marka = "Автомобиль";
+        Number = "A000AA";
+        MaxFuel = 50;
+        Rashod = 5;
+        Coordinates = [0, 0];
+        SetOnField();
+    }
+    public Auto(int id, string marka, string number, float maxFuel, float rashod)
+    {
+        Id = id;
+        Marka = marka;
+        Number = number;
+        MaxFuel = maxFuel;
+        Rashod = rashod;
+        Coordinates = GenerateCoordinates();
+        SetOnField();
+    }
+
+    public override string ToString()
+    {
+        return $"{Id,2} | {Marka,10} | {Number,6} | {Ostatok(),5:F2} л | {MaxFuel,8} л | {Rashod,14} л | {$"[{Coordinates[0]}; {Coordinates[1]}]",10}";
+    }
+
+    private static int[] GenerateCoordinates()
+    {
+        Random random = new();
+        int[] coordinates = new int[2];
+        do
+        {
+            coordinates[0] = random.Next(0, Program.Field.GetLength(0));
+            coordinates[1] = random.Next(0, Program.Field.GetLength(1));
+        } while (Program.Field[coordinates[0], coordinates[1]] != "·");
+        return coordinates;
+    }
+    public void SetOnField()
+    {
+        Program.Field[Coordinates[0], Coordinates[1]] = Id.ToString();
     }
     public void Out()
     {
-        Console.Write("Номер автомобиля: " + Number);
-        Console.Write(" | Остаток топлива: " + $"{Ostatok():F2}" + " л");
-        Console.WriteLine(" | Расход топлива на 100 км: " + Rashod + " л");
+        Console.Write("Id: " + Id);
+        Console.Write(" | Марка: " + Marka);
+        Console.Write(" | Номер: " + Number);
+        Console.Write(" | Топливо: " + $"{Ostatok():F2}" + " л");
+        Console.Write(" | Объём бака: " + MaxFuel + " л");
+        Console.Write(" | Расход на 100 км: " + Rashod + " л");
+        Console.WriteLine($" | Координаты: [{Coordinates[0]}; {Coordinates[1]}]");
     }
     public void Zapravka(float top)
     {
+        if (top > MaxFuel)
+        {
+            top -= top - MaxFuel;
+        }
         Console.WriteLine();
         Fuel += top;
-        Console.WriteLine($"Автомобиль заправлен на {top} литров\nТекущее количества топлива: {Ostatok():F2} л ");
+        Console.WriteLine($"Автомобиль заправлен на {top} л\nТекущее количества топлива: {Ostatok():F2} л ");
     }
-    public void Move(int km)
+    public void Move(int km, bool avaria)
     {
+        Random random = new();
         Console.WriteLine();
         if (Calculate(km))
         {
-            double avariaChance = random.NextDouble();
-            if (avariaChance <= 0.10)
+            if (avaria)
             {
-                int avariaKm = random.Next(1, km);
+                int avariaKm = km;
                 float requiredFuel = Rashod / 100 * avariaKm;
                 Fuel -= requiredFuel;
                 Probeg += avariaKm;
@@ -69,7 +113,7 @@
                         Console.WriteLine("Всё ещё мало топлива, нужно дозаправить.");
                 } while (!Calculate(km));
                 Razgon();
-                Move(km);
+                Move(km, false);
             }
         }
     }
@@ -108,7 +152,7 @@
     {
         if (isMoving)
         {
-            isMoving = true;
+            isMoving = false;
             Console.WriteLine("Автомобиль тормозит...");
             Console.WriteLine();
         }
