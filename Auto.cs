@@ -70,7 +70,7 @@
         }
         Console.WriteLine();
         Fuel += top;
-        Console.WriteLine($"Автомобиль заправлен на {top} л\nТекущее количества топлива: {Ostatok():F2} л ");
+        Console.WriteLine($"Автомобиль заправлен на {top} л\nТекущее количества топлива: {Fuel} л ");
     }
     public void Move(int km, bool avaria)
     {
@@ -107,7 +107,7 @@
                 Console.WriteLine("Сколько литров хотите заправить? ");
                 do
                 {
-                    float fuelForZapravka = Program.FloatInput("Введите количество топлива для заправки: ", 0);
+                    float fuelForZapravka = Program.FloatInput("Введите количество топлива для заправки: ", 0, GetMaxFuel());
                     Zapravka(fuelForZapravka);
                     if (!Calculate(km))
                         Console.WriteLine("Всё ещё мало топлива, нужно дозаправить.");
@@ -120,6 +120,10 @@
     private float Ostatok()
     {
         return Fuel;
+    }
+    public float GetMaxFuel()
+    {
+        return MaxFuel;
     }
     public bool Calculate(int distance)
     {

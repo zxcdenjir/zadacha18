@@ -44,7 +44,7 @@
                     Console.WriteLine();
                     currentCar.Out();
 
-                    float fuelAmount = FloatInput("Введите количество топлива для заправки: ", 0);
+                    float fuelAmount = FloatInput("Введите количество топлива для заправки: ", 0, currentCar.GetMaxFuel());
                     currentCar.Zapravka(fuelAmount);
 
                     Drive(currentCar);
@@ -81,7 +81,7 @@
 
                         Field[car.Coordinates[0], car.Coordinates[1]] = "·";
                         car.Coordinates[0] = 0;
-                        while (Field[car.Coordinates[0], car.Coordinates[1]] != "·") 
+                        while (Field[car.Coordinates[0], car.Coordinates[1]] != "·")
                             car.Coordinates[0] += 1;
                         car.SetOnField();
 
@@ -304,7 +304,6 @@
             Console.Write($"{i,3}");
         }
         Console.WriteLine();
-        //Console.WriteLine("  0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24");
         Console.ResetColor();
         Console.Write(" X ");
         Console.WriteLine("┌─────────────────────────────────────────────────────────────────────────────┐");
@@ -326,7 +325,7 @@
         Console.WriteLine("   └─────────────────────────────────────────────────────────────────────────────┘\n");
     }
 
-    public static float FloatInput(string text, float minValue)
+    public static float FloatInput(string text, float minValue, float maxValue)
     {
         float value;
         bool isCorrect;
@@ -336,9 +335,9 @@
             isCorrect = float.TryParse(Console.ReadLine(), out value);
             if (!isCorrect)
                 Console.WriteLine("Неверный ввод данных");
-            else if (value <= minValue)
-                Console.WriteLine($"Значение должно быть больше {minValue}");
-        } while (!isCorrect || value <= minValue);
+            else if (value < minValue || value > maxValue)
+                Console.WriteLine($"Некорректный ввод. Пожалуйста, введите число от {minValue} до {maxValue}");
+        } while (!isCorrect || value < minValue || value > maxValue);
         return value;
     }
     static int IntInput(string text, int minValue)
